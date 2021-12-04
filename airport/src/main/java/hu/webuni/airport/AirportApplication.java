@@ -22,6 +22,7 @@ public class AirportApplication implements CommandLineRunner{
 		SpringApplication.run(AirportApplication.class, args);
 	}
 
+	//git
 	@Override
 	public void run(String... args) throws Exception {
 		System.out.println(priceService.getFinalPrice(200));
