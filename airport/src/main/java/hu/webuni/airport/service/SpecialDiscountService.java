@@ -23,7 +23,9 @@ public class SpecialDiscountService implements DiscountSevice {
 	@Override
 	public int getDiscountPercent(int totalPrice) {
 //		return totalPrice > limit ? specialPercent : defaultPercent;
-		return totalPrice > config.getDiscount().getSpecial().getLimit() ? config.getDiscount().getSpecial().getPercent() : config.getDiscount().getDef().getPercent();
+		return totalPrice > config.getDiscount().getSpecial().getLimit() 
+				? config.getDiscount().getSpecial().getPercent() 
+				: config.getDiscount().getDef().getPercent();
 	}
 
 }

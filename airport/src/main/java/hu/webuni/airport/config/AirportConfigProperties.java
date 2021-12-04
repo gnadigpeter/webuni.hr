@@ -20,6 +20,8 @@ public class AirportConfigProperties {
 
 	public static class Discount{
 		private Default def = new Default();
+		private Special special = new Special();
+		
 		public Default getDef() {
 			return def;
 		}
@@ -32,7 +34,7 @@ public class AirportConfigProperties {
 		public void setSpecial(Special special) {
 			this.special = special;
 		}
-		private Special special = new Special();
+		
 	}
 	
 	public static class Default{
@@ -49,6 +51,8 @@ public class AirportConfigProperties {
 	
 	public static class Special{
 		private int percent;
+		private int limit;
+		
 		public int getPercent() {
 			return percent;
 		}
@@ -61,7 +65,7 @@ public class AirportConfigProperties {
 		public void setLimit(int limit) {
 			this.limit = limit;
 		}
-		private int limit;
+		
 	}
 	
 }
