@@ -17,7 +17,6 @@ public class AirportApplication implements CommandLineRunner{
 	@Autowired
 	PriceService priceService;
 	
-	//arg
 	public static void main(String[] args) {
 		SpringApplication.run(AirportApplication.class, args);
 	}
