@@ -35,7 +35,7 @@ public class AirportController {
 	}
 	
 	@GetMapping("/{id}")
-	public ResponseEntity<AirportDTO> getById(@PathVariable long id) {
+	public ResponseEntity<AirportDTO> getById(@PathVariable Long id) {
 		AirportDTO airportDTO = airports.get(id);
 		if(airportDTO !=null) {
 			return ResponseEntity.ok(airportDTO);
@@ -61,7 +61,7 @@ public class AirportController {
 	}
 	
 	@DeleteMapping("/{id}")
-	public void deleteAirport(@PathVariable long id) {
+	public void deleteAirport(@PathVariable Long id) {
 		airports.remove(id);
 	}
 	

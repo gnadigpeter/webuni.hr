@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Employee Manager</title>
+</head>
+<style>
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+}
+</style>
+<body>
+	<h1>List of Employees</h1>
+	<ul>
+		<li th:each="employee: ${employees}">
+			<span th:text="${employee.id}"></span>
+			<span th:text="${employee.name}"></span>
+			<span th:text="${employee.rank}"></span>
+			<span th:text="${employee.salary}"></span>
+			<span th:text="${employee.startDate}"></span>
+		</li>
+	</ul>
+	<table>
+	  <tr>
+	    <th>Id</th>
+	    <th>Name</th>
+	    <th>Rank</th>
+	    <th>Salary</th>
+	    <th>StartDate</th>
+	  </tr>
+	  <tr th:each="employee: ${employees}">
+	    <td th:text="${employee.id}"></td>
+		<td th:text="${employee.name}"></td>
+		<td th:text="${employee.rank}"></td>
+		<td th:text="${employee.salary}"></td>
+		<td th:text="${employee.startDate}"></td>
+	  </tr>
+	</table>
+	<br>
+	
+	<form th:action="@{/employees}" method="post" th:object="${newEmployee}">
+		Id:	<input th:field="*{id}" /><br>
+		Name: <input th:field="*{name}" /><br>
+		Rank: <input th:field="*{rank}" /><br>
+		Salary: <input th:field="*{salary}" /><br>
+		Start Date: <input type="datetime-local" th:field="*{startDate}" /><br>
+		<input type="submit" value="Add" /> 
+	</form>
+	
+</body>
+</html>

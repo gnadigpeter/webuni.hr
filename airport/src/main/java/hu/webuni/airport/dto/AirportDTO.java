@@ -8,10 +8,7 @@ public class AirportDTO {
 	private String iata;
 	
 	
-	public AirportDTO() {
-		
-	}
-	
+	public AirportDTO() {}
 	
 	public AirportDTO(long id, String name, String iata) {
 		super();
