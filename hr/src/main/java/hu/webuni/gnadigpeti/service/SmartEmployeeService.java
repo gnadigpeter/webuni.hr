@@ -2,11 +2,15 @@ package hu.webuni.gnadigpeti.service;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.TreeMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import hu.webuni.gnadigpeti.config.HrConfigProperties;
+import hu.webuni.gnadigpeti.config.HrConfigProperties.Smart;
 import hu.webuni.gnadigpeti.model.Employee;
 
 @Service
@@ -18,28 +22,46 @@ public class SmartEmployeeService implements EmployeeService {
 	@Override
 	public int getPayRaisePercent(Employee employee) {
 
-		long year = ChronoUnit.YEARS.between(employee.getStartDate(), LocalDateTime.now());
+		double yearsWorked = ChronoUnit.DAYS.between(employee.getStartDate(), LocalDateTime.now()) /365.0;
+
+		Smart smartConfig = config.getSalary().getSmart();
+		
 		/*
-		if(year >= 10) {
-			return 10;
-		}else if (year >=  5){
-			return 5;
-		}else if(year >= 2.5) {
-			return 2;
+		if(yearsWorked >= smartConfig.getLimit3()) {
+			return smartConfig.getPercent3();
+		} else if(yearsWorked >= smartConfig.getLimit2()) {
+			return smartConfig.getPercent2();
+		}else if(yearsWorked >= smartConfig.getLimit1()) {
+			return smartConfig.getPercent1();
 		}else {
 			return 0;
 		}*/
 		
-		if(year >= config.getRaise().getSmart().getYearTen()) {
-			return config.getRaise().getSmart().getRaiseTen();
-		} else if(year >= config.getRaise().getSmart().getYearFive()) {
-			return config.getRaise().getSmart().getRaiseFive();
-		}else if(year >= config.getRaise().getSmart().getYearTwoPointFive()) {
-			return config.getRaise().getSmart().getRaiseTwo();
-		}else {
-			return config.getRaise().getSmart().getRaiseZero();
-		}
 		
+		TreeMap<Double, Integer> raisingIntervals= smartConfig.getLimits();
+		
+		//1. megoldás
+//		Integer maxLimit = null;
+//		for(Entry<Double, Integer> entry : raisingIntervals.entrySet()) {
+//			
+//			if(yearsWorked > entry.getKey()) {
+//				maxLimit= entry.getValue();
+//			}else {
+//				break;
+//			}
+//		}
+//		return maxLimit == null? 0: maxLimit;
+		
+		//2. megoldás streammel
+//		Optional<Double> optionalMax = raisingIntervals.keySet().stream()
+//			.filter(k -> yearsWorked >= k)
+//			.max(Double::compare);
+//		
+//		return optionalMax.isEmpty() ? 0 : raisingIntervals.get(optionalMax.get());
+		
+		//3. megoldás
+		Entry<Double, Integer> floorEntry = raisingIntervals.floorEntry(yearsWorked);
+		return floorEntry == null? 0 : floorEntry.getValue();
 	}
 
 }

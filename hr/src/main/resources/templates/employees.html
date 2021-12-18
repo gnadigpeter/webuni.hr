@@ -23,7 +23,7 @@ tr:nth-child(even) {
 </style>
 <body>
 	<h1>List of Employees</h1>
-	<ul>
+	<!--  <ul>
 		<li th:each="employee: ${employees}">
 			<span th:text="${employee.id}"></span>
 			<span th:text="${employee.name}"></span>
@@ -31,7 +31,7 @@ tr:nth-child(even) {
 			<span th:text="${employee.salary}"></span>
 			<span th:text="${employee.startDate}"></span>
 		</li>
-	</ul>
+	</ul>-->
 	<table>
 	  <tr>
 	    <th>Id</th>
@@ -55,7 +55,7 @@ tr:nth-child(even) {
 		Name: <input th:field="*{name}" /><br>
 		Rank: <input th:field="*{rank}" /><br>
 		Salary: <input th:field="*{salary}" /><br>
-		Start Date: <input type="datetime-local" th:field="*{startDate}" /><br>
+		Start Date: <input th:field="*{startDate}" /><br>
 		<input type="submit" value="Add" /> 
 	</form>
 	

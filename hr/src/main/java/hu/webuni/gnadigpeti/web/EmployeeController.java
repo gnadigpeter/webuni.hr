@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import hu.webuni.gnadigpeti.dto.EmployeeDTO;
@@ -31,7 +34,12 @@ public class EmployeeController {
 	}
 	
 	@GetMapping()
-	public List<EmployeeDTO> getAll(){
+	public List<EmployeeDTO> getAll( @RequestParam(required =false) Integer minSalary){
+		if(minSalary !=null) {
+			return employees.values().stream()
+					.filter(e->e.getSalary() > minSalary)
+					.collect(Collectors.toList());
+		}
 		return new ArrayList<>(employees.values());
 	}
 	
@@ -43,6 +51,14 @@ public class EmployeeController {
 		}
 		return ResponseEntity.notFound().build();
 	}
+	
+//	//1.megoldás
+//	@GetMapping(params = "minSalary")
+//	public List<EmployeeDTO> findBySalary(@RequestParam int minSalary){
+//		return employees.values().stream()
+//				.filter(e->e.getSalary() > minSalary)
+//				.collect(Collectors.toList());
+//	}
 	
 	@GetMapping("/salery/{value}")
 	public List<EmployeeDTO> getBySaleryBiggerThen(@PathVariable Long value){
