@@ -39,13 +39,15 @@ tr:nth-child(even) {
 	    <th>Rank</th>
 	    <th>Salary</th>
 	    <th>StartDate</th>
+	    <th></th>
 	  </tr>
 	  <tr th:each="employee: ${employees}">
-	    <td th:text="${employee.id}"></td>
-		<td th:text="${employee.name}"></td>
-		<td th:text="${employee.rank}"></td>
-		<td th:text="${employee.salary}"></td>
-		<td th:text="${employee.startDate}"></td>
+	    <td th:text="${employee.id}">Id</td>
+		<td><a th:href="@{/employees/{id}(id=${employee.id})}" th:text="${employee.name}">Name</a></td>
+		<td th:text="${employee.rank}">Rank</td>
+		<td th:text="${employee.salary}">salary</td>
+		<td th:text="${employee.startDate}">startDate</td>
+		<td><a th:href="@{/deleteEmployee/{id}(id=${employee.id})}">Delete</a></td>
 	  </tr>
 	</table>
 	<br>

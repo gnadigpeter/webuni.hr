@@ -6,7 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import hu.webuni.gnadigpeti.dto.EmployeeDTO;
@@ -33,11 +35,9 @@ public class EmployeeTLController {
 		model.put("employees", allEmployees);
 		model.put("newEmployee", new Employee());
 		
-		System.out.println("-------");
 		for(Employee emp: allEmployees) {
 			System.out.println(emp.toString());
 		}
-		
 		return "/employees";
 	}
 	
@@ -46,5 +46,33 @@ public class EmployeeTLController {
 		allEmployees.add(employee);
 		return "redirect:employees";
 	}
+	
+	@GetMapping("deleteEmployee/{id}")
+	public String deleteEmployee(@PathVariable long id) {
+		allEmployees.removeIf(emp -> emp.getId() == id);
+		return "redirect:/employees";
+	}
+	
+	@GetMapping("/employees/{id}")
+	public String editEmployee(@PathVariable long id, Map<String, Object> model) {
+		model.put("employee", allEmployees.stream()
+				.filter(e -> e.getId() == id)
+				.findFirst()
+				.get());
+		return "editEmployee";
+	}
+	
+	@PostMapping("/updateEmployee")
+	public String updateEmployee(Employee employee) {
+		for(int i=0; i < allEmployees.size(); i++) {
+			if(allEmployees.get(i).getId() == employee.getId()) {
+				allEmployees.set(i, employee);
+				break;
+			}
+		}
+		return "redirect:employees";
+	}
+	
+	
 	
 }
