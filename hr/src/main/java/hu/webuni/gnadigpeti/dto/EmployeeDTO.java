@@ -2,12 +2,23 @@ package hu.webuni.gnadigpeti.dto;
 
 import java.time.LocalDateTime;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Past;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.Size;
+
 public class EmployeeDTO {
 	
 	private Long id;
+	@NotNull
+	@Size(min=1)
 	private String name;
+	@NotNull
+	@Size(min=1)
 	private String rank;
+	@Positive
 	int salary;
+	@Past
     LocalDateTime startDate;
 	
     public EmployeeDTO() {

@@ -26,19 +26,6 @@ public class Employee {
 		this.startDate = firstWorkingDay;
 	}
 	
-	public Employee(Long id, String name, String rank, int salary, String firstWorkingDay) {
-		super();
-		this.id = id;
-		this.name = name;
-		this.rank = rank;
-		this.salary = salary;
-		
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-		this.startDate = LocalDateTime.parse(firstWorkingDay, formatter);
-
-	}
-	
-	
 
 	public Long getId() {
 		return id;
