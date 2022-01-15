@@ -41,6 +41,11 @@ public class EmployeeControllerIT {
 			.isEqualTo(newEmployeeDTO);
 		
 	}
+	
+	@Test
+	void testEditEmployee() throws Exception {
+		
+	}
 
 	private void createEmployee(EmployeeDTO newEmployeeDTO) {
 		webTestClient
