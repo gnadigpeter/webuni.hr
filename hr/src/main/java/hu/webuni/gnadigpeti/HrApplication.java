@@ -1,5 +1,6 @@
 package hu.webuni.gnadigpeti;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,7 @@ public class HrApplication implements CommandLineRunner {
 
 			System.out.format("1 nappal a %.2f éves határ előtt az új fizetés %d%n", limit, e1.getSalary());
 			System.out.format("1 nappal a %.2f éves határ után az új fizetés %d%n", limit, e2.getSalary());
+			
 		}
 		
 		/*

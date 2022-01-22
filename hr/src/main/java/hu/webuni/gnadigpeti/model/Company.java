@@ -3,13 +3,20 @@ package hu.webuni.gnadigpeti.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import hu.webuni.gnadigpeti.dto.EmployeeDTO;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 
+@Entity
 public class Company {
+	@Id
+	@GeneratedValue
 	private Long id;
 	private String registrationNumber;
 	private String companyName;
-	
+	@ManyToMany
 	List<Employee> employees = new ArrayList<>();
 
 	public Company() {

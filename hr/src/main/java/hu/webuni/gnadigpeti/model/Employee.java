@@ -1,10 +1,16 @@
 package hu.webuni.gnadigpeti.model;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
+@Entity
 public class Employee {
 
+	@Id
+	@GeneratedValue
 	private Long id;
 	private String name;
 	private String rank;

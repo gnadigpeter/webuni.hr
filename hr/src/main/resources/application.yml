@@ -10,6 +10,13 @@ spring:
     format:
       date-time: yyyy-MM-dd HH:mm:ss
 
+  datasource:    url: jdbc:postgresql://localhost:5432/webuniHR
+    username: postgres
+    password: admin
+    
+  jpa:    show-sql: true
+    hibernate:      ddl-auto: update
+  
 hr:
   salary:
     def:
@@ -27,3 +34,4 @@ hr:
         5: 5
         10: 10
         7.5: 8
+        

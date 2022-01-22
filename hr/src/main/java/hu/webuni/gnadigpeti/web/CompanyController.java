@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -63,7 +65,7 @@ public class CompanyController {
 	
 	@GetMapping("/{id}")
 	public CompanyDTO getById(@RequestParam(required=false) Boolean full, @PathVariable Long id){
-		Company company = companyService.findById(id);
+		Company company = findByIdOrThrow(id);
 		if(company != null) {
 			if(isFull(full)) {
 				return companyMapper.companyToDTO(company);
@@ -83,11 +85,14 @@ public class CompanyController {
 	
 	@PutMapping("/{id}")
 	public CompanyDTO modifyCompany(@PathVariable Long id, @RequestBody CompanyDTO companyDTO){
-		if(companyService.findById(id) == null) {
+		Company company = companyMapper.dtoToCompany(companyDTO);
+		company.setId(id);
+		try {
+			CompanyDTO saveCompanyDTO = companyMapper.companyToDTO(companyService.update(company));
+			return saveCompanyDTO;
+		}catch(NoSuchElementException e) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 		}
-		Company company = companyService.save(companyMapper.dtoToCompany(companyDTO));
-		return companyMapper.companyToDTO(company);
 	}
 	
 	@DeleteMapping("/{id}")
@@ -105,11 +110,8 @@ public class CompanyController {
 	}
 	
 	private Company findByIdOrThrow(long id) {
-		Company company =  companyService.findById(id);
-		if(company == null) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-		}
-		return company;
+		return companyService.findById(id)
+				.orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND));
 	}
 	
 	@DeleteMapping("/{id}/employee/{empId}")

@@ -1,49 +1,101 @@
 package hu.webuni.airport.service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import hu.webuni.airport.model.Airport;
+import hu.webuni.airport.model.Flight;
+import hu.webuni.airport.repository.AirportRepository;
+import hu.webuni.airport.repository.FlightRepository;
 
 @Service
 public class AirportService {
-	private Map<Long, Airport> airports  = new HashMap<>();
+//	private Map<Long, Airport> airports  = new HashMap<>();
+//	
+//	{
+//		airports.put(1L, new Airport(1, "abc","XYZ"));
+//		airports.put(2L, new Airport(2, "def","UVW"));
+//	}
 	
-	{
-		airports.put(1L, new Airport(1, "abc","XYZ"));
-		airports.put(2L, new Airport(2, "def","UVW"));
+//	@PersistenceContext
+//	EntityManager em;
+	
+	AirportRepository airportRepository;
+	FlightRepository flightRepository;
+	
+
+
+	public AirportService(AirportRepository airportRepository, FlightRepository flightRepository) {
+		super();
+		this.airportRepository = airportRepository;
+		this.flightRepository = flightRepository;
 	}
-	
+
+	@Transactional
 	public Airport save(Airport airport) {
-		checkUniqueIata(airport.getIata());
-		airports.put(airport.getId(), airport);
-		return airport;
+		checkUniqueIata(airport.getIata(), null);
+//		em.persist(airport);
+		return airportRepository.save(airport);
 	}
 	
-	private void checkUniqueIata(String iata) {
-	Optional<Airport> airportWithSameIata = airports.values().stream()
-			.filter(a -> a.getIata().equals(iata))
-			.findAny();
-	if(airportWithSameIata.isPresent()) {
-		throw new NonUniqueIataException(iata);
+	@Transactional
+	public Airport update(Airport airport) {
+		checkUniqueIata(airport.getIata(), airport.getId());
+		if(airportRepository.existsById(airport.getId()))
+			return airportRepository.save(airport);
+		else
+			throw new NoSuchElementException();
 	}
+	
+	private void checkUniqueIata(String iata, Long id) {
+		
+		boolean forUpdate = id != null;
+//		TypedQuery<Long> querry = em.createNamedQuery(forUpdate ? "Airport.countByIataAndIdNotIn" : "Airport.countByIata", Long.class)
+//		.setParameter("iata", iata);
+//		if(forUpdate) {
+//			querry.setParameter("id", id);
+//		}
+//		Long count = querry
+//		.getSingleResult();
+		
+		Long count = forUpdate ? 
+				airportRepository.countByIataAndIdNot(iata, id)
+				: airportRepository.countByIata(iata);
+		if(count > 0) {
+			throw new NonUniqueIataException(iata);
+		}
 }
 	
 	public List<Airport> findAll(){
-		return new ArrayList<>(airports.values());
+//		return em.createQuery("SELECT a FROM Airport a", Airport.class).getResultList();
+		return airportRepository.findAll();
 	}
 	
-	public Airport findById(long id) {
-		return airports.get(id);
+	public Optional<Airport> findById(long id) {
+//		return em.find(Airport.class, id);
+		return airportRepository.findById(id);
 	}
 	
+	@Transactional
 	public void delete(long id) {
-		airports.remove(id);
+//		em.remove(findById(id));
+		airportRepository.deleteById(id);
+	}
+	
+	@Transactional
+	public void createFlight() {
+		Flight flight = new Flight();
+		flight.setFlightNumber("valami");
+		flight.setTakeoff(airportRepository.findById(3L).get());
+		flight.setLanding(airportRepository.findById(4L).get());
+		flight.setTakeoffTime(LocalDateTime.of(2022, 1,16,13,41,0));
+		flightRepository.save(flight);
 	}
 	
 	

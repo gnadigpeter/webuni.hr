@@ -1,18 +1,14 @@
 package hu.webuni.gnadigpeti.web;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collector;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -53,11 +49,10 @@ public class EmployeeController {
 	
 	@GetMapping("/{id}")
 	public EmployeeDTO getById(@PathVariable Long id){
-		Employee employee = employeeService.findById(id);
-		if(employee != null) {
-			return employeeMapper.employeeToDTO(employee);
-		}else
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+		Employee employee = employeeService.findById(id)
+				.orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND));
+		
+		return employeeMapper.employeeToDTO(employee);
 	}
 	
 
@@ -69,11 +64,14 @@ public class EmployeeController {
 	
 	@PutMapping("/{id}")
 	public EmployeeDTO modifyEmployee(@PathVariable Long id, @RequestBody @Valid EmployeeDTO employeeDTO){
-		if(employeeService.findById(id) == null) {
+		Employee employee = employeeMapper.dtoToEmployee(employeeDTO);
+		employee.setId(id);
+		try {
+			EmployeeDTO saveEmployeeDTO = employeeMapper.employeeToDTO(employeeService.update(employee));
+			return saveEmployeeDTO;
+		}catch(NoSuchElementException e) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 		}
-		Employee employee = employeeService.save(employeeMapper.dtoToEmployee(employeeDTO));
-		return employeeMapper.employeeToDTO(employee);
 	}
 	
 	@DeleteMapping("/{id}")
@@ -81,67 +79,16 @@ public class EmployeeController {
 		employeeService.delete(id);
 	}
 	
-	/*@GetMapping()
-	public List<EmployeeDTO> getAll( @RequestParam(required =false) Integer minSalary){
-		if(minSalary !=null) {
-			return employees.values().stream()
-					.filter(e->e.getSalary() > minSalary)
-					.collect(Collectors.toList());
-		}
-		return new ArrayList<>(employees.values());
-	}*/
-	
-	/*
-	@GetMapping("/{id}")
-	public ResponseEntity<EmployeeDTO> getById(@PathVariable Long id){
-		EmployeeDTO employeeDTO = employees.get(id);
-		if(employeeDTO != null) {
-			return ResponseEntity.ok(employeeDTO);
-		}
-		return ResponseEntity.notFound().build();
+	@GetMapping("/rank/{rank}")
+	public List<EmployeeDTO> getByRank(@PathVariable String rank){
+		return employeeMapper.employeesToDTOs(employeeService.findByRank(rank));
 	}
-	
-//	//1.megoldás
-//	@GetMapping(params = "minSalary")
-//	public List<EmployeeDTO> findBySalary(@RequestParam int minSalary){
-//		return employees.values().stream()
-//				.filter(e->e.getSalary() > minSalary)
-//				.collect(Collectors.toList());
-//	}
-	
-	@GetMapping("/salery/{value}")
-	public List<EmployeeDTO> getBySaleryBiggerThen(@PathVariable Long value){
-		ArrayList<EmployeeDTO> all = new ArrayList<>(employees.values());
-		ArrayList<EmployeeDTO> response = new ArrayList<>();
-		
-		for(EmployeeDTO employeeDTO: all) {
-			if(employeeDTO.getSalary() > value) {
-				response.add(employeeDTO);
-			}
-		}
-		return response;
+	@GetMapping("/name/{name}")
+	public List<EmployeeDTO> getByName(@PathVariable String name){
+		return employeeMapper.employeesToDTOs(employeeService.findByNameStartingWith(name));
 	}
-	
-	@PostMapping
-	public EmployeeDTO createEmployee(@RequestBody @Valid EmployeeDTO employeeDTO) {
-		employees.put(employeeDTO.getId(), employeeDTO);
-		return employeeDTO;
+	@GetMapping("/startdate/{date1}/{date2}")
+	public List<EmployeeDTO> getByStartDateBetween(@PathVariable String date1, @PathVariable String date2){//
+		return employeeMapper.employeesToDTOs(employeeService.findByStartDateBetween(date1, date2));
 	}
-	
-	@PutMapping("/{id}")
-	public ResponseEntity<EmployeeDTO> modifyEmployee(@PathVariable Long id, @RequestBody @Valid EmployeeDTO employeeDTO){
-		if(!employees.containsKey(id)) {
-			return ResponseEntity.notFound().build();
-		}
-		employeeDTO.setId(id);
-		employees.put(id, employeeDTO);
-		return ResponseEntity.ok(employeeDTO);
-	}
-	
-	@DeleteMapping("/{id}")
-	public void deleteEmployee(@PathVariable Long id) {
-		employees.remove(id);
-	}
-	
-	*/
 }
