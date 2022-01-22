@@ -14,4 +14,5 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long>{
 	List<Employee> findByNameStartingWithIgnoreCase(String name);
 	
 	List<Employee> findByStartDateBetween(LocalDateTime date1, LocalDateTime date2);
+
 }

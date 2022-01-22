@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class Employee {
@@ -17,6 +19,8 @@ public class Employee {
 	int salary;
     LocalDateTime startDate;
 	
+    @ManyToOne
+    private Company company;
     
     
     public Employee() {
@@ -32,6 +36,14 @@ public class Employee {
 		this.startDate = firstWorkingDay;
 	}
 	
+
+	public Company getCompany() {
+		return company;
+	}
+
+	public void setCompany(Company company) {
+		this.company = company;
+	}
 
 	public Long getId() {
 		return id;

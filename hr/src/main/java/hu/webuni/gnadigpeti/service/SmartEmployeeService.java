@@ -2,6 +2,7 @@ package hu.webuni.gnadigpeti.service;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.TreeMap;
@@ -63,5 +64,7 @@ public class SmartEmployeeService extends EmployeeServiceA implements EmployeeSe
 		Entry<Double, Integer> floorEntry = raisingIntervals.floorEntry(yearsWorked);
 		return floorEntry == null? 0 : floorEntry.getValue();
 	}
+
+	
 
 }

@@ -16,7 +16,8 @@ public class Company {
 	private Long id;
 	private String registrationNumber;
 	private String companyName;
-	@ManyToMany
+	
+	@OneToMany(mappedBy="company")
 	List<Employee> employees = new ArrayList<>();
 
 	public Company() {
@@ -62,4 +63,10 @@ public class Company {
 		this.employees = employees;
 	}
 	
+	public void addEmployee(Employee employee) {
+		if(this.employees == null)
+			this.employees = new ArrayList<>();
+		this.employees.add(employee);
+		employee.setCompany(this);
+	}
 }

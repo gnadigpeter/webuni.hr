@@ -17,9 +17,11 @@ public class EmployeeDTO {
 	@Size(min=1)
 	private String rank;
 	@Positive
-	int salary;
+	private int salary;
 	@Past
-    LocalDateTime startDate;
+    private LocalDateTime startDate;
+	
+	private CompanyDTO company;
 	
     public EmployeeDTO() {
 		super();
@@ -32,6 +34,14 @@ public class EmployeeDTO {
 		this.rank = rank;
 		this.salary = salary;
 		this.startDate = startDate;
+	}
+
+	public CompanyDTO getCompany() {
+		return company;
+	}
+
+	public void setCompany(CompanyDTO companyDTO) {
+		this.company = companyDTO;
 	}
 
 	public Long getId() {

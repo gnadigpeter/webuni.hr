@@ -1,17 +1,11 @@
 package hu.webuni.gnadigpeti.web;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -45,35 +39,25 @@ public class CompanyController {
 
 	@GetMapping()
 	public List<CompanyDTO> getAll(@RequestParam(required=false) Boolean full){
+		List<Company> companies = companyService.findAll();
 		if(isFull(full)) {
-			return companyMapper.companiesToDTOs(companyService.findAll());
+			return companyMapper.companiesToDTOs(companies);
 		}else {
-			return companyMapper.companiesToDTOs(companyService.findAll())
-					.stream()
-					.map(this::createCompanyWithoutEmployees)
-					.collect(Collectors.toList());
+			return companyMapper.companiesToSummaryDTOs(companies);
 		}
+
 	}
-	
 	private boolean isFull(Boolean full) {
 		return full != null && full;
-	}
-	
-	private CompanyDTO createCompanyWithoutEmployees(CompanyDTO c) {
-		return new CompanyDTO(c.getId(), c.getCompanyName(), c.getRegistrationNumber(), null);
 	}
 	
 	@GetMapping("/{id}")
 	public CompanyDTO getById(@RequestParam(required=false) Boolean full, @PathVariable Long id){
 		Company company = findByIdOrThrow(id);
-		if(company != null) {
-			if(isFull(full)) {
-				return companyMapper.companyToDTO(company);
-			}else {
-				return createCompanyWithoutEmployees(companyMapper.companyToDTO(company));
-			}
+		if(isFull(full)) {
+			return companyMapper.companyToDTO(company);
 		}else {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+			return companyMapper.companyToSummaryDTO(company);
 		}
 	}
 	
@@ -102,35 +86,37 @@ public class CompanyController {
 	
 	@PostMapping("/{id}/employee")
 	public CompanyDTO addNewEmployee(@PathVariable long id, @RequestBody EmployeeDTO employeeDTO){
-		Company company = findByIdOrThrow(id);
-		company.getEmployees().add(employeeMapper.dtoToEmployee(employeeDTO));
-		companyService.save(company);
-		
-		return companyMapper.companyToDTO(company);
+		try {
+			return companyMapper.companyToDTO(companyService.addEmployee(id, employeeMapper.dtoToEmployee(employeeDTO)));
+		}catch(NoSuchElementException e) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+		}
+	}
+	
+	
+	
+	@DeleteMapping("/{id}/employee/{empId}")
+	public CompanyDTO deleteEmployeeFromCompany(@PathVariable long id, @PathVariable long empId) {
+		try {
+			return companyMapper.companyToDTO(companyService.deleteEmployee(id, empId));
+		}catch(NoSuchElementException e) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+		}
+	}
+	
+	@PutMapping("/{id}/employee")
+	public CompanyDTO replaceAllEmployees(@PathVariable long id, @RequestBody List<EmployeeDTO> employees) {
+		try {
+			return companyMapper.companyToDTO(companyService.replaceEmployee(id, employeeMapper.dtosToEmployees(employees)));
+		}catch(NoSuchElementException e) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+		}
 	}
 	
 	private Company findByIdOrThrow(long id) {
 		return companyService.findById(id)
 				.orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND));
 	}
-	
-	@DeleteMapping("/{id}/employee/{empId}")
-	public CompanyDTO deleteEmployeeFromCompany(@PathVariable long id, @PathVariable long empId) {
-		Company company = findByIdOrThrow(id);
-		company.getEmployees().removeIf(emp -> emp.getId() == empId);
-		companyService.save(company);
-		return companyMapper.companyToDTO(company);
-	}
-	
-	@PutMapping("/{id}/employee")
-	public CompanyDTO replaceAllEmployees(@RequestBody List<EmployeeDTO> employees, @PathVariable long id) {
-		Company company = findByIdOrThrow(id);
-		company.setEmployees(employeeMapper.dtosToEmployees(employees));
-		companyService.save(company);
-		return companyMapper.companyToDTO(company);
-	}
-	
-	
 	/*
 	@GetMapping()
 	public List<CompanyDTO> getAll(@RequestParam(required=false) Boolean full){

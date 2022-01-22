@@ -79,6 +79,8 @@ public class EmployeeController {
 		employeeService.delete(id);
 	}
 	
+
+	
 	@GetMapping("/rank/{rank}")
 	public List<EmployeeDTO> getByRank(@PathVariable String rank){
 		return employeeMapper.employeesToDTOs(employeeService.findByRank(rank));

@@ -9,21 +9,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import hu.webuni.gnadigpeti.model.Company;
+import hu.webuni.gnadigpeti.model.Employee;
 import hu.webuni.gnadigpeti.repository.CompanyRepository;
+import hu.webuni.gnadigpeti.repository.EmployeeRepository;
 
 @Service
 public class CompanyService {
-//	private Map<Long, Company> companies = new HashMap<Long, Company>();
-//	{
-//		List<Employee> emp = new ArrayList<>();
-//		emp.add(new Employee(1L, "aaa", "Jani", 0, null));
-//		emp.add(new Employee(2L, "bbb", "Jani", 0, null));
-//		emp.add(new Employee(3L, "ccc", "Jani", 0, null));
-//		companies.put(1L, new Company(1L, "123", "test cp", emp));
-//	}
-	
+
 	@Autowired
 	CompanyRepository companyRepository;
+	
+	@Autowired
+	EmployeeRepository employeeRepository;
 	
 	public List<Company> findAll(){
 		return companyRepository.findAll();
@@ -50,6 +47,36 @@ public class CompanyService {
 	@Transactional
 	public void delete(long id) {
 		companyRepository.deleteById(id);
+	}
+	
+	@Transactional
+	public Company addEmployee(long id, Employee employee) {
+		Company company = companyRepository.findById(id).get();
+		company.addEmployee(employee);
+		employeeRepository.save(employee);
+		return company;
+	}
+	@Transactional
+	public Company deleteEmployee(long id, long employeeId) {
+		Company company = companyRepository.findById(id).get();
+		Employee employee = employeeRepository.findById(employeeId).get();
+		employee.setCompany(null);
+		company.getEmployees().remove(employee);
+		employeeRepository.save(employee);
+		return company;
+	}
+	
+	@Transactional
+	public Company replaceEmployee(long id, List<Employee> employees) {
+		Company company = companyRepository.findById(id).get();
+		company.getEmployees().forEach(e->e.setCompany(null));
+		company.getEmployees().clear();
+		
+		for(Employee emp: employees) {
+			company.addEmployee(emp);
+			employeeRepository.save(emp);
+		}
+		return company;
 	}
 	
 }
