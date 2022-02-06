@@ -20,9 +20,6 @@ public class Flight {
 	private LocalDateTime takeoffTime;
 	
 	
-	
-	
-	
 	public long getId() {
 		return id;
 	}
