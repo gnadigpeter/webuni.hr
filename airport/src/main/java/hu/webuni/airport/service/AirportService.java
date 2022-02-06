@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -89,13 +88,13 @@ public class AirportService {
 	}
 	
 	@Transactional
-	public void createFlight() {
+	public Flight createFlight(String flightNumber, long takeOfAirportId, long landingAirportId, LocalDateTime takeOfDateTime) {
 		Flight flight = new Flight();
-		flight.setFlightNumber("valami");
-		flight.setTakeoff(airportRepository.findById(3L).get());
-		flight.setLanding(airportRepository.findById(4L).get());
-		flight.setTakeoffTime(LocalDateTime.of(2022, 1,16,13,41,0));
-		flightRepository.save(flight);
+		flight.setFlightNumber(flightNumber);
+		flight.setTakeoff(airportRepository.findById(takeOfAirportId).get());
+		flight.setLanding(airportRepository.findById(landingAirportId).get());
+		flight.setTakeoffTime(takeOfDateTime);
+		return flightRepository.save(flight);
 	}
 	
 	

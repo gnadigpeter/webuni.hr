@@ -23,6 +23,7 @@ import org.springframework.web.server.ResponseStatusException;
 import hu.webuni.gnadigpeti.dto.EmployeeDTO;
 import hu.webuni.gnadigpeti.mapper.EmployeeMapper;
 import hu.webuni.gnadigpeti.model.Employee;
+import hu.webuni.gnadigpeti.service.EmployeeService;
 import hu.webuni.gnadigpeti.service.SmartEmployeeService;
 
 @RestController
@@ -30,7 +31,7 @@ import hu.webuni.gnadigpeti.service.SmartEmployeeService;
 public class EmployeeController {
 	
 	@Autowired
-	SmartEmployeeService employeeService;
+	EmployeeService employeeService;
 	
 	@Autowired
 	EmployeeMapper employeeMapper;
@@ -39,12 +40,20 @@ public class EmployeeController {
 	
 	@GetMapping()
 	public List<EmployeeDTO> getAll( @RequestParam(required =false) Integer minSalary){
-		if(minSalary !=null) {
-			return employeeMapper.employeesToDTOs(employeeService.findAll()).stream()
-					.filter(e->e.getSalary() > minSalary)
-					.collect(Collectors.toList());
+//		if(minSalary !=null) {
+//			return employeeMapper.employeesToDTOs(employeeService.findAll()).stream()
+//					.filter(e->e.getSalary() > minSalary)
+//					.collect(Collectors.toList());
+//		}
+//		return employeeMapper.employeesToDTOs(employeeService.findAll());
+//		
+		List<Employee> employees = null;
+		if(minSalary == null) {
+			employees = employeeService.findAll();
+		} else {
+			employees = employeeService.findBySalaryGreaterThan(minSalary);
 		}
-		return employeeMapper.employeesToDTOs(employeeService.findAll());
+		return employeeMapper.employeesToDTOs(employees);
 	}
 	
 	@GetMapping("/{id}")

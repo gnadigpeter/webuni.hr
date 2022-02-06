@@ -15,7 +15,7 @@ public class EmployeeDTO {
 	private String name;
 	@NotNull
 	@Size(min=1)
-	private String rank;
+	private String jobTitle;
 	@Positive
 	private int salary;
 	@Past
@@ -27,11 +27,11 @@ public class EmployeeDTO {
 		super();
 	}
 
-	public EmployeeDTO(Long id, String name, String rank, int salary, LocalDateTime startDate) {
+	public EmployeeDTO(Long id, String name, String jobTitle, int salary, LocalDateTime startDate) {
 		super();
 		this.id = id;
 		this.name = name;
-		this.rank = rank;
+		this.jobTitle = jobTitle;
 		this.salary = salary;
 		this.startDate = startDate;
 	}
@@ -60,12 +60,14 @@ public class EmployeeDTO {
 		this.name = name;
 	}
 
-	public String getRank() {
-		return rank;
+
+
+	public String getJobTitle() {
+		return jobTitle;
 	}
 
-	public void setRank(String rank) {
-		this.rank = rank;
+	public void setJobTitle(String jobTitle) {
+		this.jobTitle = jobTitle;
 	}
 
 	public int getSalary() {

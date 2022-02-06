@@ -123,11 +123,11 @@ public class EmployeeControllerIT {
 	}
 
 	private EmployeeDTO newInvalidEmployee() {
-		return new EmployeeDTO(5L, "", "CEO", 500, LocalDateTime.of(2020, 1, 1, 12, 12));
+		return new EmployeeDTO(5L, "", "test", 500, LocalDateTime.of(2020, 1, 1, 12, 12));
 	}
 	
 	private EmployeeDTO newValidEmployee() {
-		return  new EmployeeDTO(5L, "Józsi", "CEO", 500, LocalDateTime.of(2020, 1, 1, 12, 12));
+		return  new EmployeeDTO(5L, "Józsi", "test", 500, LocalDateTime.of(2020, 1, 1, 12, 12));
 	}
 	
 	

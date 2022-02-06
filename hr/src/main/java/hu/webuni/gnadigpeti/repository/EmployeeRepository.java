@@ -9,10 +9,13 @@ import hu.webuni.gnadigpeti.model.Employee;
 
 public interface EmployeeRepository extends JpaRepository<Employee, Long>{
 
-	List<Employee> findDistinctByRank(String rank);
+	List<Employee> findByPositionName(String jobTitle);
 
 	List<Employee> findByNameStartingWithIgnoreCase(String name);
 	
 	List<Employee> findByStartDateBetween(LocalDateTime date1, LocalDateTime date2);
 
+	List<Employee> findBySalaryGreaterThan(Integer minSalary);
+
+	List<Employee> findByName(String name);
 }

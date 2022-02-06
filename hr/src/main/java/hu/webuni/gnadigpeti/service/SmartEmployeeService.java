@@ -15,7 +15,7 @@ import hu.webuni.gnadigpeti.config.HrConfigProperties.Smart;
 import hu.webuni.gnadigpeti.model.Employee;
 
 @Service
-public class SmartEmployeeService extends EmployeeServiceA implements EmployeeService {
+public class SmartEmployeeService extends EmployeeServiceAbstract implements EmployeeService {
 
 	@Autowired
 	HrConfigProperties config;

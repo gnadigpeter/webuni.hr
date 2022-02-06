@@ -3,12 +3,34 @@ package hu.webuni.gnadigpeti.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
+import javax.persistence.NamedSubgraph;
 import javax.persistence.OneToMany;
 
+//@NamedEntityGraph(name = "Company.full",
+//				attributeNodes = @NamedAttributeNode("employees"))	
+@NamedEntityGraph(name = "Company.full",
+attributeNodes = {
+    @NamedAttributeNode("employees"),
+    @NamedAttributeNode(value = "employees", subgraph = "employees-subgraph")
+},
+subgraphs = {
+        @NamedSubgraph(name = "employees-subgraph",
+            attributeNodes = {
+                @NamedAttributeNode("position")
+            }
+        )
+    }
+)
+    
+   
 @Entity
 public class Company {
 	@Id
@@ -17,9 +39,12 @@ public class Company {
 	private String registrationNumber;
 	private String companyName;
 	
-	@OneToMany(mappedBy="company")
+	@OneToMany(mappedBy = "company", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	List<Employee> employees = new ArrayList<>();
-
+	
+	@ManyToOne
+	private CompanyType companyType;
+	
 	public Company() {
 	}
 
@@ -69,4 +94,14 @@ public class Company {
 		this.employees.add(employee);
 		employee.setCompany(this);
 	}
+
+	public CompanyType getCompanyType() {
+		return companyType;
+	}
+
+	public void setCompanyType(CompanyType companyType) {
+		this.companyType = companyType;
+	}
+	
+	
 }

@@ -5,9 +5,12 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import hu.webuni.gnadigpeti.model.AverageSalaryByPosition;
 import hu.webuni.gnadigpeti.model.Company;
 import hu.webuni.gnadigpeti.model.Employee;
 import hu.webuni.gnadigpeti.repository.CompanyRepository;
@@ -22,8 +25,15 @@ public class CompanyService {
 	@Autowired
 	EmployeeRepository employeeRepository;
 	
+	@Autowired
+	EmployeeService employeeService;
+	
 	public List<Company> findAll(){
 		return companyRepository.findAll();
+	}
+	
+	public List<Company> findAllWithEmployees(){
+		return companyRepository.findAllWithEmployees();
 	}
 	
 	public Optional<Company> findById(long id) {
@@ -53,7 +63,7 @@ public class CompanyService {
 	public Company addEmployee(long id, Employee employee) {
 		Company company = companyRepository.findById(id).get();
 		company.addEmployee(employee);
-		employeeRepository.save(employee);
+		employeeService.save(employee);
 		return company;
 	}
 	@Transactional
@@ -77,6 +87,18 @@ public class CompanyService {
 			employeeRepository.save(emp);
 		}
 		return company;
+	}
+	
+	public Page<Company> findByEmployeeWithSalaryHigherThan(Pageable pageable,int minSalary){
+		return companyRepository.findByEmployeeWithSalaryHigherThan(pageable,minSalary);
+	}
+	
+	public List<Company> findByEmployeeCountHigherThan(int minEmployeeCount){
+		return companyRepository.findByEmployeeCountHigherThan(minEmployeeCount);
+	}
+	
+	public List<AverageSalaryByPosition> findAverageSalariesByPosition(long id){
+		return companyRepository.findAverageSalariesByPosition(id);
 	}
 	
 }

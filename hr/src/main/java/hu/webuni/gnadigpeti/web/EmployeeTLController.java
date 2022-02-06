@@ -19,11 +19,11 @@ public class EmployeeTLController {
 	
 	private List<Employee> allEmployees = new ArrayList<Employee>();
 	
-	{
-		allEmployees.add(new Employee(1L, "Sebastian Silverstone", "brewer", 3000, LocalDateTime.of(2018, 12, 11, 12, 00)));
-		allEmployees.add(new Employee(2L, "Leviticus", "actor", 1500, LocalDateTime.of(2018, 12, 11, 12, 00)));
-		allEmployees.add(new Employee(3L, "Remi Malcor", "botanist", 4500, LocalDateTime.of(2018, 12, 11, 12, 00)));
-	}
+//	{
+//		allEmployees.add(new Employee(1L, "Sebastian Silverstone", "brewer", 3000, LocalDateTime.of(2018, 12, 11, 12, 00)));
+//		allEmployees.add(new Employee(2L, "Leviticus", "actor", 1500, LocalDateTime.of(2018, 12, 11, 12, 00)));
+//		allEmployees.add(new Employee(3L, "Remi Malcor", "botanist", 4500, LocalDateTime.of(2018, 12, 11, 12, 00)));
+//	}
 	
 	@GetMapping("/")
 	public String home() {

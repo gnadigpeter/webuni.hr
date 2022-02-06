@@ -8,7 +8,7 @@ import hu.webuni.gnadigpeti.config.HrConfigProperties;
 import hu.webuni.gnadigpeti.model.Employee;
 
 @Service
-public class DefaultEmployeeService extends EmployeeServiceA implements EmployeeService {
+public class DefaultEmployeeService extends EmployeeServiceAbstract implements EmployeeService {
 
 	@Autowired
 	HrConfigProperties configProperties;

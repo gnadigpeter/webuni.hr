@@ -16,6 +16,7 @@ spring:
     
   jpa:    show-sql: true
     hibernate:      ddl-auto: update
+    open-in-view: false
   
 hr:
   salary:

@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,8 +24,11 @@ import hu.webuni.gnadigpeti.dto.CompanyDTO;
 import hu.webuni.gnadigpeti.dto.EmployeeDTO;
 import hu.webuni.gnadigpeti.mapper.CompanyMapper;
 import hu.webuni.gnadigpeti.mapper.EmployeeMapper;
+import hu.webuni.gnadigpeti.model.AverageSalaryByPosition;
 import hu.webuni.gnadigpeti.model.Company;
 import hu.webuni.gnadigpeti.service.CompanyService;
+
+
 
 @RestController
 @RequestMapping("/api/companies")
@@ -39,14 +45,16 @@ public class CompanyController {
 
 	@GetMapping()
 	public List<CompanyDTO> getAll(@RequestParam(required=false) Boolean full){
-		List<Company> companies = companyService.findAll();
+		List<Company> companies = null;
 		if(isFull(full)) {
+			companies = companyService.findAllWithEmployees();
 			return companyMapper.companiesToDTOs(companies);
 		}else {
+			companies = companyService.findAll();
 			return companyMapper.companiesToSummaryDTOs(companies);
 		}
-
 	}
+	
 	private boolean isFull(Boolean full) {
 		return full != null && full;
 	}
@@ -117,87 +125,39 @@ public class CompanyController {
 		return companyService.findById(id)
 				.orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND));
 	}
-	/*
-	@GetMapping()
-	public List<CompanyDTO> getAll(@RequestParam(required=false) Boolean full){
-		if(isFull(full)) {
-			return new ArrayList<>(companies.values());
-		}else {
-			return companies.values()
-					.stream()
-					.map(this::createCompanyWithoutEmployees)
-					.collect(Collectors.toList());
-		}
-		
+	
+
+	
+	
+	@GetMapping(params = "aboveSalary")
+	public List<CompanyDTO> getCompaniesAboveASalary(@RequestParam int aboveSalary,
+			@RequestParam(required = false) Boolean full,
+			@SortDefault("id") Pageable pageable) {
+		Page<Company> page = companyService.findByEmployeeWithSalaryHigherThan(pageable, aboveSalary);
+		System.out.println(page.getTotalElements());
+		System.out.println(page.isLast());
+		List<Company> allCompanies = page.getContent();
+		return mapCompanies(allCompanies, full);
 	}
 
-	private CompanyDTO createCompanyWithoutEmployees(CompanyDTO c) {
-		return new CompanyDTO(c.getId(), c.getCompanyName(), c.getRegistrationNumber(), null);
-	}
-	
-	private boolean isFull(Boolean full) {
-		return full != null && full;
-	}
-	
-	@GetMapping("/{id}")
-	public CompanyDTO getById(@RequestParam(required=false) Boolean full, @PathVariable Long id){
-		CompanyDTO companyDTO = companies.get(id);
-		if(isFull(full)) {
-			return companyDTO;
-		}else {
-			return createCompanyWithoutEmployees(companyDTO);
-		}
-	}
-	
-	@PostMapping
-	public CompanyDTO createCompany(@RequestBody CompanyDTO companyDTO) {
-		companies.put(companyDTO.getId(), companyDTO);
-		return companyDTO;
-	}
-	
-	@PutMapping("/{id}")
-	public ResponseEntity<CompanyDTO> modifyCompany(@PathVariable Long id, @RequestBody CompanyDTO companyDTO){
-		if(!companies.containsKey(id)) {
-			return ResponseEntity.notFound().build();
-		}
-		companyDTO.setId(id);
-		companies.put(id, companyDTO);
-		return ResponseEntity.ok(companyDTO);
-	}
-	
-	@DeleteMapping("/{id}")
-	public void deleteCompany(@PathVariable Long id) {
-		companies.remove(id);
-	}
-//----------------------------------------------------------
-	@PostMapping("/{id}/employee")
-	public CompanyDTO addNewEmployee(@PathVariable long id, @RequestBody EmployeeDTO employeeDTO){
-		CompanyDTO company = findByIdOrThrow(id);
-		company.getEmployees().add(employeeDTO);
-		return company;
+	private List<CompanyDTO> mapCompanies(List<Company> allCompanies, Boolean full) {
+		if (full == null || !full) {
+			return companyMapper.companiesToSummaryDTOs(allCompanies);
+		} else
+			return companyMapper.companiesToDTOs(allCompanies);
 	}
 
-	private CompanyDTO findByIdOrThrow(long id) {
-		CompanyDTO company =  companies.get(id);
-		if(company == null) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-		}
-		return company;
+	@GetMapping(params = "aboveEmployeeNumber")
+	public List<CompanyDTO> getCompaniesAboveEmployeeNumber(@RequestParam int aboveEmployeeNumber,
+			@RequestParam(required = false) Boolean full) {
+		List<Company> filteredCompanies = companyService.findByEmployeeCountHigherThan(aboveEmployeeNumber);
+		return mapCompanies(filteredCompanies, full);
 	}
 	
-	@DeleteMapping("/{id}/employee/{empId}")
-	public CompanyDTO deleteEmployeeFromCompany(@PathVariable long id, @PathVariable long empId) {
-		CompanyDTO company = findByIdOrThrow(id);
-		company.getEmployees().removeIf(emp -> emp.getId() == empId);
-		return company;
+	@GetMapping("/{id}/salaryStats")
+	public List<AverageSalaryByPosition> getSalaryStatsById(@PathVariable long id, @RequestParam(required = false) Boolean full) {
+		return companyService.findAverageSalariesByPosition(id);
 	}
-	
-	@PutMapping("/{id}/employee")
-	public CompanyDTO replaceAllEmployees(@RequestBody List<EmployeeDTO> employees, @PathVariable long id) {
-		CompanyDTO company = findByIdOrThrow(id);
-		company.setEmployees(employees);
-		return company;
-	}*/
 	
 	
 }
