@@ -52,6 +52,12 @@ public class CompanyDTO {
 	public void setEmployees(List<EmployeeDTO> employees) {
 		this.employees = employees;
 	}
+
+	@Override
+	public String toString() {
+		return "CompanyDTO [id=" + id + ", registrationNumber=" + registrationNumber + ", companyName=" + companyName
+				+ ", employees=" + employees.toString() + "]";
+	}
 	
 	
 	

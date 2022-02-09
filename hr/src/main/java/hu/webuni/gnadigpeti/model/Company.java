@@ -14,8 +14,7 @@ import javax.persistence.NamedEntityGraph;
 import javax.persistence.NamedSubgraph;
 import javax.persistence.OneToMany;
 
-//@NamedEntityGraph(name = "Company.full",
-//				attributeNodes = @NamedAttributeNode("employees"))	
+//@NamedEntityGraph(name = "Company.full", attributeNodes = @NamedAttributeNode("employees"))	
 @NamedEntityGraph(name = "Company.full",
 attributeNodes = {
     @NamedAttributeNode("employees"),
@@ -29,8 +28,6 @@ subgraphs = {
         )
     }
 )
-    
-   
 @Entity
 public class Company {
 	@Id
@@ -89,6 +86,7 @@ public class Company {
 	}
 	
 	public void addEmployee(Employee employee) {
+		System.out.println(employee.toString());
 		if(this.employees == null)
 			this.employees = new ArrayList<>();
 		this.employees.add(employee);

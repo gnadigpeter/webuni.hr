@@ -34,6 +34,7 @@ public interface CompanyRepository extends JpaRepository<Company, Long> {
 	
 //	@Query("SELECT DISTINCT c FROM Company c LEFT JOIN FETCH c.employees")
 //	@EntityGraph(attributePaths = "employees")
+//	@EntityGraph(attributePaths = {"employees", "employees.position"}) 
 	@EntityGraph("Company.full")
 	@Query("SELECT c FROM Company c")
 	public List<Company> findAllWithEmployees();

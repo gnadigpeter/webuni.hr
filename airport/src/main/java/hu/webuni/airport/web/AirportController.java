@@ -22,6 +22,7 @@ import hu.webuni.airport.dto.AirportDTO;
 import hu.webuni.airport.mapper.AirportMapper;
 import hu.webuni.airport.model.Airport;
 import hu.webuni.airport.service.AirportService;
+import hu.webuni.airport.service.LogEntryService;
 
 @RestController
 @RequestMapping("/api/airports")
@@ -33,6 +34,8 @@ public class AirportController {
 	@Autowired
 	AirportMapper airportMapper;
 	
+//	@Autowired
+//	LogEntryService logEntryService;
 	
 	@GetMapping()
 	public List<AirportDTO> getAll(){
@@ -59,6 +62,7 @@ public class AirportController {
 		airport.setId(id);
 		try {
 			AirportDTO savedAirportDTO = airportMapper.airportToDTO(airportService.update(airport));
+			//logEntryService.createLog("Airport modified with id "+id);
 			return ResponseEntity.ok(savedAirportDTO);
 		}catch(NoSuchElementException e) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);

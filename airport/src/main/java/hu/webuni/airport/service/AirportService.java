@@ -4,7 +4,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.Random;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -29,6 +31,9 @@ public class AirportService {
 //	@PersistenceContext
 //	EntityManager em;
 	
+	@Autowired
+	LogEntryService logEntryService;
+	
 	AirportRepository airportRepository;
 	FlightRepository flightRepository;
 	
@@ -50,12 +55,20 @@ public class AirportService {
 	@Transactional
 	public Airport update(Airport airport) {
 		checkUniqueIata(airport.getIata(), airport.getId());
-		if(airportRepository.existsById(airport.getId()))
+		if(airportRepository.existsById(airport.getId())) {
+			logEntryService.createLog(String.format("Airport modified with id %d new name is %s", airport.getId(), airport.getName() ));
+			//callBackendSystem();
 			return airportRepository.save(airport);
-		else
+		}else
 			throw new NoSuchElementException();
 	}
 	
+	private void callBackendSystem() {
+		if( new Random().nextInt(2) == 1) {
+			throw new RuntimeException();
+		}
+		
+	}
 	private void checkUniqueIata(String iata, Long id) {
 		
 		boolean forUpdate = id != null;

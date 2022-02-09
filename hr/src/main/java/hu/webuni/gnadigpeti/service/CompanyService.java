@@ -13,8 +13,10 @@ import org.springframework.transaction.annotation.Transactional;
 import hu.webuni.gnadigpeti.model.AverageSalaryByPosition;
 import hu.webuni.gnadigpeti.model.Company;
 import hu.webuni.gnadigpeti.model.Employee;
+import hu.webuni.gnadigpeti.model.Position;
 import hu.webuni.gnadigpeti.repository.CompanyRepository;
 import hu.webuni.gnadigpeti.repository.EmployeeRepository;
+import hu.webuni.gnadigpeti.repository.PositionRepository;
 
 @Service
 public class CompanyService {
@@ -27,6 +29,9 @@ public class CompanyService {
 	
 	@Autowired
 	EmployeeService employeeService;
+	
+	@Autowired
+	PositionRepository positionRepository;
 	
 	public List<Company> findAll(){
 		return companyRepository.findAll();
@@ -62,10 +67,12 @@ public class CompanyService {
 	@Transactional
 	public Company addEmployee(long id, Employee employee) {
 		Company company = companyRepository.findById(id).get();
-		company.addEmployee(employee);
 		employeeService.save(employee);
+		company.addEmployee(employee);
 		return company;
 	}
+	
+	
 	@Transactional
 	public Company deleteEmployee(long id, long employeeId) {
 		Company company = companyRepository.findById(id).get();
