@@ -90,8 +90,8 @@ public class CompanyService {
 		company.getEmployees().clear();
 		
 		for(Employee emp: employees) {
+			employeeService.save(emp);
 			company.addEmployee(emp);
-			employeeRepository.save(emp);
 		}
 		return company;
 	}

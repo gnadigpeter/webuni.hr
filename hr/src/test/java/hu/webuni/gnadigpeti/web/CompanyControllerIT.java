@@ -1,6 +1,7 @@
 package hu.webuni.gnadigpeti.web;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -62,25 +63,63 @@ public class CompanyControllerIT {
 	
 	@Test
 	void testAddEmployeeToCompany() throws Exception {
-		List<CompanyDTO> companiesBefore = getAllCompany();		
-		CompanyDTO newCompanyDTO = createCompany(createCompanyDTO());	;
-		List<CompanyDTO> companiesAfter = getAllCompany();
-		EmployeeDTO employee1 = newValidEmployee();
+		CompanyDTO newCompanyDTO = createCompany(createCompanyDTO());
+		EmployeeDTO newEmployeeDTO = newValidEmployee();
+		List<EmployeeDTO> employeesBefore = newCompanyDTO.getEmployees();	
+		newCompanyDTO = addEmployeeToCompany(newCompanyDTO.getId(),newEmployeeDTO);	
+		List<EmployeeDTO> employeesAfter = newCompanyDTO.getEmployees();
 		
-		List<CompanyDTO> newCompanyDTO2 =  addEmployeeToCompany(newCompanyDTO.getId(),employee1);
+		assertThat(employeesAfter.subList(0, employeesBefore.size()))
+			.usingRecursiveFieldByFieldElementComparator()
+			.containsExactlyElementsOf(employeesBefore);
+		assertThat(employeesAfter.size()).isEqualTo(employeesBefore.size() + 1);
+		assertThat(employeesAfter.get(employeesAfter.size() - 1))
+	        .usingRecursiveComparison()
+	        .ignoringFields("id")
+	        .isEqualTo(newEmployeeDTO);
+	}
+	
+	
+	@Test
+	void testDeleteEmployeeFromCompany() throws Exception {
+		CompanyDTO newCompanyDTO = createCompany(createCompanyDTO());
+		EmployeeDTO newEmployeeDTO = newValidEmployee();
+		newCompanyDTO = addEmployeeToCompany(newCompanyDTO.getId(),newValidEmployee());	
+		newEmployeeDTO = newCompanyDTO.getEmployees().get(0);
+		List<EmployeeDTO> employeesBefore = newCompanyDTO.getEmployees();
+
+		deleteEmployeeFromCompany(newCompanyDTO.getId(), newEmployeeDTO.getId());
+		List<EmployeeDTO> employeesAfter = getCompanyById(newCompanyDTO.getId()).getEmployees();
 		
+//		System.out.println("employees after delete: ");
+//		System.out.println(employeesAfter.size());
+//		for(EmployeeDTO e : employeesAfter) {
+//			System.out.println(e.getName());
+//		}
 		
+		assertThat(employeesAfter.size()+1).isEqualTo(employeesBefore.size());
+		assertThat(employeesBefore)
+			.contains(newEmployeeDTO);
+		assertThat(employeesAfter)
+			.doesNotContain(newEmployeeDTO);	
+	}
+	
+	
+	@Test
+	void testReplaceAllEmployee() throws Exception {
+		CompanyDTO newCompanyDTO = createCompany(createCompanyDTO());
+		List<EmployeeDTO> employeeList = new ArrayList<>();
 		
+		for(int i=0;i<3;i++) {
+			employeeList.add(new EmployeeDTO(null, i+1+" Józsi", "test", 500, LocalDateTime.of(2020, 1, 1, 1, 1)));
+		}
+		CompanyDTO newCompanyDTO2 = replaceEmployeesToCompany(newCompanyDTO.getId(), employeeList);
 		
-		
-		assertThat(companiesAfter.subList(0, companiesBefore.size()))
-		.usingRecursiveFieldByFieldElementComparator()
-		.containsExactlyElementsOf(companiesBefore);
-		
-		System.out.println(companiesAfter.get(0).getCompanyName());
-		
-		//TODO: assert! 
-		
+		assertThat(newCompanyDTO.getEmployees().size() +3).isEqualTo(newCompanyDTO2.getEmployees().size());
+		assertThat(newCompanyDTO2.getEmployees())
+			.usingRecursiveComparison()
+			.ignoringFields("id")
+			.isEqualTo(employeeList);
 		
 	}
 	
@@ -90,7 +129,7 @@ public class CompanyControllerIT {
 	
 	private CompanyDTO createCompanyDTO() {
 		List<EmployeeDTO> employees = new ArrayList<>();
-		return  new CompanyDTO(1L, "A123", "Evil Company", employees);
+		return  new CompanyDTO(null, "A123", "Evil Company", employees);
 	}
 	
 	private CompanyDTO createCompany(CompanyDTO newCompany) {
@@ -121,33 +160,53 @@ public class CompanyControllerIT {
 		return responseList;
 	}
 	
-	private List<CompanyDTO> addEmployeeToCompany(long companId, EmployeeDTO employeeDTO) {
-		List<CompanyDTO> responseList = webTestClient
+	private CompanyDTO addEmployeeToCompany(long companId, EmployeeDTO employeeDTO) {
+		return webTestClient
 				.post()
 				.uri(BASE_COMPANY_URI+"/"+companId+"/employee")
 				.bodyValue(employeeDTO)
 				.exchange()
 				.expectStatus()
 				.isOk()
-				.expectBodyList(CompanyDTO.class)
+				.expectBody(CompanyDTO.class)
+				.returnResult()
+				.getResponseBody();	
+	}
+	
+	private CompanyDTO replaceEmployeesToCompany(long companId, List<EmployeeDTO> employeeDTOs) {
+		return webTestClient
+				.put()
+				.uri(BASE_COMPANY_URI+"/"+companId+"/employee")
+				.bodyValue(employeeDTOs)
+				.exchange()
+				.expectStatus()
+				.isOk()
+				.expectBody(CompanyDTO.class)
+				.returnResult()
+				.getResponseBody();	
+	}
+	
+	
+	private void deleteEmployeeFromCompany(long companyId, long employeeId) {
+		webTestClient
+		.delete()
+		.uri(BASE_COMPANY_URI+"/"+companyId+"/employee/"+employeeId)
+		.exchange()
+		.expectStatus()
+		.isOk();
+	}
+	
+	private CompanyDTO getCompanyById(long id) {
+		return webTestClient
+				.get()
+				.uri(BASE_COMPANY_URI+"/"+id+"?full=true")
+				.exchange()
+				.expectStatus()
+				.isOk()
+				.expectBody(CompanyDTO.class)
 				.returnResult()
 				.getResponseBody();
-		Collections.sort(responseList, Comparator.comparing(CompanyDTO::getId));
-		
-		return responseList;
-		
 	}
-	
-	private void createEmployee(EmployeeDTO newEmployeeDTO) {
-		webTestClient
-			.post()
-			.uri(BASE_EMPLOYEE_URI)
-			.bodyValue(newEmployeeDTO)
-			.exchange()
-			.expectStatus()
-			.isOk();
-	}
-	
 	
 	
 }
