@@ -35,18 +35,9 @@ public class EmployeeController {
 	
 	@Autowired
 	EmployeeMapper employeeMapper;
-
-	
 	
 	@GetMapping()
 	public List<EmployeeDTO> getAll( @RequestParam(required =false) Integer minSalary){
-//		if(minSalary !=null) {
-//			return employeeMapper.employeesToDTOs(employeeService.findAll()).stream()
-//					.filter(e->e.getSalary() > minSalary)
-//					.collect(Collectors.toList());
-//		}
-//		return employeeMapper.employeesToDTOs(employeeService.findAll());
-//		
 		List<Employee> employees = null;
 		if(minSalary == null) {
 			employees = employeeService.findAll();
@@ -76,8 +67,7 @@ public class EmployeeController {
 		Employee employee = employeeMapper.dtoToEmployee(employeeDTO);
 		employee.setId(id);
 		try {
-			EmployeeDTO saveEmployeeDTO = employeeMapper.employeeToDTO(employeeService.update(employee));
-			return saveEmployeeDTO;
+			return employeeMapper.employeeToDTO(employeeService.update(employee));
 		}catch(NoSuchElementException e) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 		}
@@ -101,5 +91,11 @@ public class EmployeeController {
 	@GetMapping("/startdate/{date1}/{date2}")
 	public List<EmployeeDTO> getByStartDateBetween(@PathVariable String date1, @PathVariable String date2){//
 		return employeeMapper.employeesToDTOs(employeeService.findByStartDateBetween(date1, date2));
+	}
+	
+	
+	@GetMapping("/findEmployeeByExample")
+	public List<EmployeeDTO> findEmployeeByExample(@RequestBody EmployeeDTO employeeDTO){
+		return employeeMapper.employeesToDTOs( employeeService.findEmployeeByExample(employeeMapper.dtoToEmployee(employeeDTO)));
 	}
 }

@@ -32,4 +32,6 @@ public interface EmployeeService {
 	public List<Employee> findByNameStartingWith(String name);
 	
 	public List<Employee> findByStartDateBetween(String date1, String date2);
+	
+	public List<Employee> findEmployeeByExample(Employee employee);
 }

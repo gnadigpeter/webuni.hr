@@ -126,16 +126,11 @@ public class CompanyController {
 				.orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND));
 	}
 	
-
-	
-	
 	@GetMapping(params = "aboveSalary")
 	public List<CompanyDTO> getCompaniesAboveASalary(@RequestParam int aboveSalary,
 			@RequestParam(required = false) Boolean full,
 			@SortDefault("id") Pageable pageable) {
 		Page<Company> page = companyService.findByEmployeeWithSalaryHigherThan(pageable, aboveSalary);
-		System.out.println(page.getTotalElements());
-		System.out.println(page.isLast());
 		List<Company> allCompanies = page.getContent();
 		return mapCompanies(allCompanies, full);
 	}

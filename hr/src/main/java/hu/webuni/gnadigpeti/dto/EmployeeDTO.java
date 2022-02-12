@@ -85,5 +85,12 @@ public class EmployeeDTO {
 	public void setStartDate(LocalDateTime startDate) {
 		this.startDate = startDate;
 	}
+
+	@Override
+	public String toString() {
+		return "EmployeeDTO [id=" + id + ", name=" + name + ", jobTitle=" + jobTitle + ", salary=" + salary
+				+ ", startDate=" + startDate + ", company=" + company + "]";
+	}
     
+	
 }
