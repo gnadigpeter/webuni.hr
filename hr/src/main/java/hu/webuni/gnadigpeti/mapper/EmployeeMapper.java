@@ -10,8 +10,6 @@ import org.mapstruct.Mapping;
 import hu.webuni.gnadigpeti.dto.EmployeeDTO;
 import hu.webuni.gnadigpeti.model.Employee;
 
-
-
 @Mapper(componentModel = "spring")
 public interface EmployeeMapper {
 	List<EmployeeDTO> employeesToDTOs(List<Employee> employees);

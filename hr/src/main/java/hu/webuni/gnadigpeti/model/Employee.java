@@ -1,16 +1,14 @@
 package hu.webuni.gnadigpeti.model;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.persistence.MapsId;
-
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
+import javax.persistence.OneToMany;
 
 @Entity
 public class Employee {
@@ -29,6 +27,12 @@ public class Employee {
     @ManyToOne
     //@Cascade(CascadeType.SAVE_UPDATE)
     private Position position;
+    
+    @OneToMany(mappedBy = "employee")
+   	private List<Holiday> holidayRequests;
+    
+	@ManyToOne
+	private Employee manager;
     
     
     public Employee() {
@@ -89,6 +93,14 @@ public class Employee {
 	
 	
 	
+	public Employee getManager() {
+		return manager;
+	}
+
+	public void setManager(Employee manager) {
+		this.manager = manager;
+	}
+
 	public Position getPosition() {
 		return position;
 	}
@@ -97,6 +109,23 @@ public class Employee {
 		this.position = position;
 	}
 
+	
+	public List<Holiday> getHolidayRequests() {
+		return holidayRequests;
+	}
+
+	public void setHolidayRequests(List<Holiday> holidayRequests) {
+		this.holidayRequests = holidayRequests;
+	}
+
+	public void addHolidayRequest(Holiday holidayRequest){
+		if(this.holidayRequests == null) {
+			this.holidayRequests = new ArrayList<>();
+		}
+		this.holidayRequests.add(holidayRequest);
+		holidayRequest.setEmployee(this);
+	}
+	
 	@Override
 	public String toString() {
 		return "Employee [id=" + id + ", name=" + name + ", salary=" + salary + ", startDate=" + startDate

@@ -12,6 +12,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -22,6 +23,7 @@ import hu.webuni.gnadigpeti.repository.CompanyRepository;
 import hu.webuni.gnadigpeti.repository.EmployeeRepository;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@AutoConfigureTestDatabase
 public class CompanyControllerIT {
 	private static final String BASE_COMPANY_URI="/api/companies";
 	private static final String BASE_EMPLOYEE_URI="/api/employees";

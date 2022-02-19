@@ -5,11 +5,9 @@ import java.time.LocalTime;
 
 import org.springframework.data.jpa.domain.Specification;
 
-import hu.webuni.gnadigpeti.model.Company;
 import hu.webuni.gnadigpeti.model.Company_;
 import hu.webuni.gnadigpeti.model.Employee;
 import hu.webuni.gnadigpeti.model.Employee_;
-import hu.webuni.gnadigpeti.model.Position;
 import hu.webuni.gnadigpeti.model.Position_;
 
 public class EmployeeSpecifications {
