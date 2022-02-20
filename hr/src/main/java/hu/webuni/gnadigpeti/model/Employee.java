@@ -34,6 +34,8 @@ public class Employee {
 	@ManyToOne
 	private Employee manager;
     
+	private String username;
+	private String password;
     
     public Employee() {
 		super();
@@ -46,7 +48,6 @@ public class Employee {
 		this.salary = salary;
 		this.startDate = firstWorkingDay;
 	}
-	
 
 	public Company getCompany() {
 		return company;
@@ -72,8 +73,6 @@ public class Employee {
 		this.name = name;
 	}
 
-
-
 	public int getSalary() {
 		return salary;
 	}
@@ -90,9 +89,6 @@ public class Employee {
 		this.startDate = startDate;
 	}
 
-	
-	
-	
 	public Employee getManager() {
 		return manager;
 	}
@@ -126,6 +122,22 @@ public class Employee {
 		holidayRequest.setEmployee(this);
 	}
 	
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
 	@Override
 	public String toString() {
 		return "Employee [id=" + id + ", name=" + name + ", salary=" + salary + ", startDate=" + startDate

@@ -15,10 +15,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import hu.webuni.gnadigpeti.dto.CompanyDTO;
 import hu.webuni.gnadigpeti.dto.EmployeeDTO;
+import hu.webuni.gnadigpeti.model.Employee;
 import hu.webuni.gnadigpeti.repository.CompanyRepository;
 import hu.webuni.gnadigpeti.repository.EmployeeRepository;
 
@@ -37,10 +39,23 @@ public class CompanyControllerIT {
 	@Autowired
 	EmployeeRepository employeeRepository;
 	
+	@Autowired
+	PasswordEncoder passwordEncoder;
+	
+	private String username = "testuser";
+	private String pass = "pass";
+	
 	@BeforeEach
 	public void init() {
 		companyRepository.deleteAll();
 		employeeRepository.deleteAll();
+		
+		if(employeeRepository.findByUsername(username).isEmpty()) {
+			Employee employee = new Employee();
+			employee.setUsername(username);
+			employee.setPassword(passwordEncoder.encode(pass));
+			employeeRepository.save(employee);
+		}
 	}
 	
 	
@@ -138,6 +153,7 @@ public class CompanyControllerIT {
 		return webTestClient
 			.post()
 			.uri(BASE_COMPANY_URI)
+			.headers(headers -> headers.setBasicAuth(username, pass))
 			.bodyValue(newCompany)
 			.exchange()
 			.expectStatus()
@@ -151,6 +167,7 @@ public class CompanyControllerIT {
 		List<CompanyDTO> responseList = webTestClient
 				.get()
 				.uri(BASE_COMPANY_URI)
+				.headers(headers -> headers.setBasicAuth(username, pass))
 				.exchange()
 				.expectStatus()
 				.isOk()
@@ -166,6 +183,7 @@ public class CompanyControllerIT {
 		return webTestClient
 				.post()
 				.uri(BASE_COMPANY_URI+"/"+companId+"/employee")
+				.headers(headers -> headers.setBasicAuth(username, pass))
 				.bodyValue(employeeDTO)
 				.exchange()
 				.expectStatus()
@@ -179,6 +197,7 @@ public class CompanyControllerIT {
 		return webTestClient
 				.put()
 				.uri(BASE_COMPANY_URI+"/"+companId+"/employee")
+				.headers(headers -> headers.setBasicAuth(username, pass))
 				.bodyValue(employeeDTOs)
 				.exchange()
 				.expectStatus()
@@ -193,6 +212,7 @@ public class CompanyControllerIT {
 		webTestClient
 		.delete()
 		.uri(BASE_COMPANY_URI+"/"+companyId+"/employee/"+employeeId)
+		.headers(headers -> headers.setBasicAuth(username, pass))
 		.exchange()
 		.expectStatus()
 		.isOk();
@@ -202,6 +222,7 @@ public class CompanyControllerIT {
 		return webTestClient
 				.get()
 				.uri(BASE_COMPANY_URI+"/"+id+"?full=true")
+				.headers(headers -> headers.setBasicAuth(username, pass))
 				.exchange()
 				.expectStatus()
 				.isOk()

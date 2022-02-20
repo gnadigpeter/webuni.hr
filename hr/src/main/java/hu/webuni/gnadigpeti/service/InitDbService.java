@@ -3,6 +3,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +28,9 @@ public class InitDbService {
 	@Autowired
 	CompanyRepository companyRepository;
 	
+	@Autowired
+	PasswordEncoder passwordEncoder;
+	
 //	@Autowired
 //	PositionDetailsByCompanyRepository positionDetailsByCompanyRepository;
 	
@@ -45,15 +49,19 @@ public class InitDbService {
 				?  positionRepository.save(new Position(testerName,Qualification.HIGH_SCHOOL))
 				:  testerPositions.get(0);
 		
-		
 		if(employeeRepository.findByName("Jakab").isEmpty()) {
 			Employee newEmployee1 = employeeRepository.save(new Employee(null, "Jakab",  200, LocalDateTime.now()));
 			newEmployee1.setPosition(developer);
+			newEmployee1.setUsername("user1");
+			newEmployee1.setPassword(passwordEncoder.encode("pass1"));
 		}
 		
 		if(employeeRepository.findByName("Béla").isEmpty()) {
 			Employee newEmployee2 = employeeRepository.save(new Employee(null, "Béla",  100, LocalDateTime.now()));
 			newEmployee2.setPosition(tester);
+			newEmployee2.setUsername("user2");
+			newEmployee2.setPassword(passwordEncoder.encode("pass2"));
+			newEmployee2.setManager(employeeRepository.findByName("Jakab").get(0));
 		}
 		
 		if(companyRepository.findByCompanyName("EvilCorp").isEmpty()) {
@@ -65,6 +73,8 @@ public class InitDbService {
 				newCompany.addEmployee(employeeRepository.findByName("Béla").get(0));
 			}
 		}
+		
+		
 		
 		
 		

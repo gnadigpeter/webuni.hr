@@ -15,7 +15,7 @@ spring:
     password: admin
     
   jpa:    show-sql: true
-    hibernate:      ddl-auto: update
+    hibernate:      ddl-auto: create
     open-in-view: false
   
 hr:

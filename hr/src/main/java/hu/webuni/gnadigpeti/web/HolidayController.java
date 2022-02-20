@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -48,7 +49,7 @@ public class HolidayController {
 		return holidayMapper.holidayRequestToDto(holidayRequest);
 	}
 	
-	//@PreAuthorize("#newHolidayRequest.employeeId == authentication.principal.employee.employeeId")
+	@PreAuthorize("#newHoliday.employeeId == authentication.principal.employee.id")
 	@PostMapping
 	public HolidayDTO addHolidayRequest(@RequestBody @Valid HolidayDTO newHoliday) {
 		Holiday holiday;
@@ -87,6 +88,7 @@ public class HolidayController {
 		}
 	}
 	
+	@PreAuthorize("#approverId == authentication.principal.employee.id")
 	@PutMapping(value = "/{id}/approval", params = { "status", "approverId" })
 	public HolidayDTO approveHolidayRequest(@PathVariable long id, @RequestParam long approverId, @RequestParam boolean status) {
 		Holiday holidayRequest;
