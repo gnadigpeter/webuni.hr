@@ -3,8 +3,6 @@ package hu.webuni.gnadigpeti.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -19,6 +17,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import hu.webuni.gnadigpeti.security.JwtAuthFilter;
+
 
 @Configuration
 @EnableWebSecurity
@@ -28,8 +28,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	UserDetailsService userDetailsService;
 	
-//	@Autowired
-//	JwtAuthFilter jwtAuthFilter;
+	@Autowired
+	JwtAuthFilter jwtAuthFilter;
 	
 	@Bean
 	public PasswordEncoder passwordEncoder() {
@@ -51,18 +51,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http
-			.httpBasic()
-			.and()
+//			.httpBasic()
+//			.and()
 			.csrf().disable()
 			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 			.and()
 			.authorizeRequests()
-//			.antMatchers("/api/login/**").permitAll()
+			.antMatchers("/api/login/**").permitAll()
 //			.antMatchers(HttpMethod.POST, "/api/airports/**").hasAuthority("admin")
 //			.antMatchers(HttpMethod.PUT, "/api/airports/**").hasAnyAuthority("user","admin")
 			.anyRequest().authenticated();
 		
-//		http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+		http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 		
 	}
 	

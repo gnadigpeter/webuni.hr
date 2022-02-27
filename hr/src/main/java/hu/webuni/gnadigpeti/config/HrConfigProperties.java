@@ -1,8 +1,7 @@
 package hu.webuni.gnadigpeti.config;
 
 
-import java.util.Map;
-import java.util.Set;
+import java.time.Duration;
 import java.util.TreeMap;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -13,7 +12,8 @@ import org.springframework.stereotype.Component;
 public class HrConfigProperties {
 
 	private Salary salary = new Salary();
-
+	private JwtData jwtData = new JwtData();
+	
 	public Salary getSalary() {
 		return salary;
 	}
@@ -126,5 +126,47 @@ public class HrConfigProperties {
 		}
 
 	}
+	
+	public static class JwtData{
+		private String issuer;
+		private String secret;
+		private String alg;
+		private Duration dureation;
+		public String getIssuer() {
+			return issuer;
+		}
+		public void setIssuer(String issuer) {
+			this.issuer = issuer;
+		}
+		public String getSecret() {
+			return secret;
+		}
+		public void setSecret(String secret) {
+			this.secret = secret;
+		}
+		public String getAlg() {
+			return alg;
+		}
+		public void setAlg(String alg) {
+			this.alg = alg;
+		}
+		public Duration getDureation() {
+			return dureation;
+		}
+		public void setDureation(Duration dureation) {
+			this.dureation = dureation;
+		}
+		
+		
+	}
 
+	public JwtData getJwtData() {
+		return jwtData;
+	}
+
+	public void setJwtData(JwtData jwtData) {
+		this.jwtData = jwtData;
+	}
+
+	
 }

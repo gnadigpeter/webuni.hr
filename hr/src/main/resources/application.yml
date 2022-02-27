@@ -17,8 +17,21 @@ spring:
   jpa:    show-sql: true
     hibernate:      ddl-auto: create
     open-in-view: false
+
+
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
+
   
 hr:
+  jwtData:
+    issuer: HrApp
+    alg: HMAC512
+    secret: mysecret
+    dureation: 1m
   salary:
     def:
       percent: 5

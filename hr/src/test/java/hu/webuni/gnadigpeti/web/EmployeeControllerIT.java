@@ -1,7 +1,6 @@
 package hu.webuni.gnadigpeti.web;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -18,9 +17,9 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.test.web.reactive.server.WebTestClient.ResponseSpec;
 
 import hu.webuni.gnadigpeti.dto.EmployeeDTO;
+import hu.webuni.gnadigpeti.dto.LoginDTO;
 import hu.webuni.gnadigpeti.model.Employee;
 import hu.webuni.gnadigpeti.repository.EmployeeRepository;
-import io.netty.handler.codec.Headers;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class EmployeeControllerIT {
@@ -32,6 +31,7 @@ public class EmployeeControllerIT {
 	
 	private String username = "testuser";
 	private String pass = "pass";
+	private String jwt;
 	
 	@Autowired
 	EmployeeRepository employeeRepository;
@@ -47,6 +47,18 @@ public class EmployeeControllerIT {
 			employee.setPassword(passwordEncoder.encode(pass));
 			employeeRepository.save(employee);
 		}
+		LoginDTO loginDTO = new LoginDTO();
+		loginDTO.setUsername(username);
+		loginDTO.setPassword(pass);
+		
+		jwt = webTestClient.post()
+			.uri("/api/login")
+			.bodyValue(loginDTO)
+			.exchange()
+			.expectBody(String.class)
+			.returnResult()
+			.getResponseBody();
+			
 	}
 
 	@Test
@@ -160,7 +172,8 @@ public class EmployeeControllerIT {
 		return webTestClient
 				.post()
 				.uri(BASE_URI)
-				.headers(headers -> headers.setBasicAuth(username, pass))
+//				.headers(headers -> headers.setBasicAuth(username, pass))
+				.headers(headers -> headers.setBearerAuth(jwt))
 				.bodyValue(newEmployee)
 				.exchange();
 	}
@@ -169,7 +182,8 @@ public class EmployeeControllerIT {
 		return webTestClient
 				.put()
 				.uri(path)
-				.headers(headers -> headers.setBasicAuth(username, pass))
+				//.headers(headers -> headers.setBasicAuth(username, pass))
+				.headers(headers -> headers.setBearerAuth(jwt))
 				.bodyValue(newEmployee)
 				.exchange();
 		
@@ -179,7 +193,8 @@ public class EmployeeControllerIT {
 		webTestClient
 			.post()
 			.uri(BASE_URI)
-			.headers(headers -> headers.setBasicAuth(username, pass))
+			//.headers(headers -> headers.setBasicAuth(username, pass))
+			.headers(headers -> headers.setBearerAuth(jwt))
 			.bodyValue(newEmployeeDTO)
 			.exchange()
 			.expectStatus()
@@ -190,7 +205,8 @@ public class EmployeeControllerIT {
 		List<EmployeeDTO> responseList = webTestClient
 				.get()
 				.uri(BASE_URI)
-				.headers(headers -> headers.setBasicAuth(username, pass))
+				//.headers(headers -> headers.setBasicAuth(username, pass))
+				.headers(headers -> headers.setBearerAuth(jwt))
 				.exchange()
 				.expectStatus()
 				.isOk()

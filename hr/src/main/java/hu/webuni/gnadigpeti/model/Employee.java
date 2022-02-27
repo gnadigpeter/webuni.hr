@@ -33,6 +33,9 @@ public class Employee {
     
 	@ManyToOne
 	private Employee manager;
+	
+	@OneToMany(mappedBy = "manager")
+	private List<Employee> managedEmployee;
     
 	private String username;
 	private String password;
@@ -136,6 +139,14 @@ public class Employee {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public List<Employee> getManagedEmployee() {
+		return managedEmployee;
+	}
+
+	public void setManagedEmployee(List<Employee> managedEmployee) {
+		this.managedEmployee = managedEmployee;
 	}
 
 	@Override
